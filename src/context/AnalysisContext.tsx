@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { StockData, SectorMapping, IndexData } from '../types/StockData';
+import { StockData, SectorMapping, IndexData } from '../types/DataTypes'; // Change import
 
 interface AnalysisContextType {
   stockData: StockData[];
@@ -27,7 +27,7 @@ export function AnalysisProvider({ children }: { children: React.ReactNode }) {
   const loadData = (data: any) => {
     setState({
       stockData: data.stock || [],
-      sectorInfo: data.sector || null,
+      sectorInfo: data.sector?.[0] || null, // Take first sector mapping if array
       peerAnalysis: data.peers || [],
       indexData: data.index || [],
       sectorIndexData: data.sectorIndex || []

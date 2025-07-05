@@ -55,36 +55,89 @@ export class DataService {
     });
   }
 
-  static async processData(
-    stockFile: File,
-    sectorFile: File,
-    peerFile: File,
-    indexFile: File,
-    sectorIndexFile: File
-  ): Promise<ProcessedData> {
-    try {
-      const [stockDataRaw, sectorData, peerDataRaw, indexDataRaw, sectorIndexDataRaw] = await Promise.all([
-        this.parseCSV(stockFile),
-        this.parseCSV(sectorFile),
-        this.parseCSV(peerFile),
-        this.parseCSV(indexFile),
-        this.parseCSV(sectorIndexFile)
-      ]);
+  // In DataService.ts, add better data validation and field mapping
+static async processData(
+  stockFile: File,
+  sectorFile: File,
+  peerFile: File,
+  indexFile: File,
+  sectorIndexFile: File
+): Promise<ProcessedData> {
+  try {
+    const [stockDataRaw, sectorData, peerDataRaw, indexDataRaw, sectorIndexDataRaw] = await Promise.all([
+      this.parseCSV(stockFile),
+      this.parseCSV(sectorFile),
+      this.parseCSV(peerFile),
+      this.parseCSV(indexFile),
+      this.parseCSV(sectorIndexFile)
+    ]);
 
-      const stockData: StockData[] = stockDataRaw;
-      const peerData: PeerData[] = peerDataRaw;
-      const indexData: IndexData[] = indexDataRaw;
-      const sectorIndexData: SectorIndexData[] = sectorIndexDataRaw;
+    // Convert numeric fields properly
+    const stockData: StockData[] = stockDataRaw.map((row: any) => ({
+      ...row,
+      'Prev Close': parseFloat(row['Prev Close']) || 0,
+      'Open Price': parseFloat(row['Open Price']) || 0,
+      'High Price': parseFloat(row['High Price']) || 0,
+      'Low Price': parseFloat(row['Low Price']) || 0,
+      'Last Price': parseFloat(row['Last Price']) || 0,
+      'Close Price': parseFloat(row['Close Price']) || 0,
+      'Average Price': parseFloat(row['Average Price']) || 0,
+      'Total Traded Quantity': parseFloat(row['Total Traded Quantity']) || 0,
+      'Turnover ₹': parseFloat(row['Turnover ₹']) || 0,
+      'No. of Trades': parseInt(row['No. of Trades']) || 0,
+      'Deliverable Qty': parseFloat(row['Deliverable Qty']) || 0,
+      '% Dly Qt to Traded Qty': parseFloat(row['% Dly Qt to Traded Qty']) || 0,
+      'Total Traded Value': parseFloat(row['Total Traded Value']) || undefined
+    }));
 
-      return {
-        stock: stockData,
-        sector: sectorData,
-        peers: peerData,
-        index: indexData,
-        sectorIndex: sectorIndexData
-      };
-    } catch (error) {
-      throw error;
-    }
+    const peerData: PeerData[] = peerDataRaw.map((row: any) => ({
+      ...row,
+      'Open Price': parseFloat(row['Open Price']) || 0,
+      'Close Price': parseFloat(row['Close Price']) || 0,
+      'Total Traded Quantity': parseFloat(row['Total Traded Quantity']) || 0,
+      '% Dly Qt to Traded Qty': parseFloat(row['% Dly Qt to Traded Qty']) || 0
+    }));
+
+    const indexData: IndexData[] = indexDataRaw.map((row: any) => ({
+      ...row,
+      'Open Index Value': parseFloat(row['Open Index Value']) || 0,
+      'High Index Value': parseFloat(row['High Index Value']) || 0,
+      'Low Index Value': parseFloat(row['Low Index Value']) || 0,
+      'Closing Index Value': parseFloat(row['Closing Index Value']) || 0,
+      'Points Change': parseFloat(row['Points Change']) || 0,
+      'Change(%)': parseFloat(row['Change(%)']) || 0,
+      Volume: parseFloat(row['Volume']) || 0,
+      'Turnover (Rs. Cr.)': parseFloat(row['Turnover (Rs. Cr.)']) || parseFloat(row['Turnover (₹ Cr.)']) || 0,
+      'P/E': parseFloat(row['P/E']) || 0,
+      'P/B': parseFloat(row['P/B']) || 0,
+      'Div Yield': parseFloat(row['Div Yield']) || 0
+    }));
+
+    const sectorIndexData: SectorIndexData[] = sectorIndexDataRaw.map((row: any) => ({
+      ...row,
+      'Open Index Value': parseFloat(row['Open Index Value']) || 0,
+      'High Index Value': parseFloat(row['High Index Value']) || 0,
+      'Low Index Value': parseFloat(row['Low Index Value']) || 0,
+      'Closing Index Value': parseFloat(row['Closing Index Value']) || 0,
+      'Points Change': parseFloat(row['Points Change']) || 0,
+      'Change(%)': parseFloat(row['Change(%)']) || 0,
+      Volume: parseFloat(row['Volume']) || 0,
+      'Turnover (Rs. Cr.)': parseFloat(row['Turnover (Rs. Cr.)']) || parseFloat(row['Turnover (₹ Cr.)']) || 0,
+      'P/E': parseFloat(row['P/E']) || 0,
+      'P/B': parseFloat(row['P/B']) || 0,
+      'Div Yield': parseFloat(row['Div Yield']) || 0
+    }));
+
+    return {
+      stock: stockData,
+      sector: sectorData,
+      peers: peerData,
+      index: indexData,
+      sectorIndex: sectorIndexData
+    };
+  } catch (error) {
+    console.error('Data processing error:', error);
+    throw error;
   }
+}
 }
