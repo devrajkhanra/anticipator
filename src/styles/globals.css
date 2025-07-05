@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .stat-card {
+    @apply bg-white rounded-xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300;
+  }
+  
+  .metric-value {
+    @apply text-2xl font-bold;
+  }
+  
+  .metric-label {
+    @apply text-sm text-gray-600;
+  }
+  
+  .trend-up {
+    @apply text-green-600;
+  }
+  
+  .trend-down {
+    @apply text-red-600;
+  }
+  
+  .card-header {
+    @apply flex items-center space-x-3 mb-6;
+  }
+  
+  .card-title {
+    @apply text-2xl font-bold text-gray-900;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors duration-200;
+}
